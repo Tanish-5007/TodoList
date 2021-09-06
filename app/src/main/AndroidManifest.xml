@@ -10,6 +10,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList">
         <activity
+            android:name=".TaskActivity"
+            android:exported="true" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
