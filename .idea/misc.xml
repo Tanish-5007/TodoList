@@ -3,10 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/drawable/border.xml" value="0.22179487179487178" />
         <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/drawable/ic_search_black_24dp.xml" value="0.2703125" />
         <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/layout/activity_history.xml" value="0.16" />
         <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/layout/activity_main.xml" value="0.2" />
         <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/layout/activity_task.xml" value="0.264" />
+        <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/layout/item_todo.xml" value="0.264" />
         <entry key="..\:/Android_CodingBlocks/TodoList/app/src/main/res/menu/main_menu.xml" value="0.25416666666666665" />
       </map>
     </option>
