@@ -1,22 +1,27 @@
 package com.example.todolist
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private val list = arrayListOf<TodoModel>()
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
-    val db by lazy {
-        AppDatabase.get
+    private val list = arrayListOf<TodoModel>()
+    var adapter = TodoAdapter(list)
+
+    private val db by lazy {
+        AppDatabase.getDatabase(this)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -24,13 +29,25 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        val adapter = TodoAdapter(list)
-        binding.todoRv.layoutManager = LinearLayoutManager(this)
-        binding.todoRv.adapter = adapter
-
         binding.button.setOnClickListener {
             startActivity(Intent(this, TaskActivity::class.java))
         }
+
+        binding.todoRv.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+        }
+
+        db.todoDao().getTask().observe(this, Observer {
+            if (!it.isNullOrEmpty()) {
+                list.clear()
+                list.addAll(it)
+                adapter.notifyDataSetChanged()
+            }else{
+                list.clear()
+                adapter.notifyDataSetChanged()
+            }
+        })
 
     }
 

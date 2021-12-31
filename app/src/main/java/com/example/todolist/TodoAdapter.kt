@@ -1,50 +1,63 @@
 package com.example.todolist
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolist.databinding.ItemTodoBinding
+import kotlinx.android.synthetic.main.item_todo.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TodoAdapter(private val list: List<TodoModel>): RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+class TodoAdapter(val list: List<TodoModel>) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TodoViewHolder {
-        val binding = ItemTodoBinding.inflate(LayoutInflater.from(parent.context))
-        return TodoViewHolder(binding)
+        return TodoViewHolder(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_todo, parent, false)
+        )
     }
+
+    override fun getItemCount() = list.size
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         holder.bind(list[position])
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemId(position: Int): Long {
+        return list[position].id
+    }
 
-    class TodoViewHolder(private val binding: ItemTodoBinding): RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(todoModel: TodoModel){
-            with(itemView){
-                val color = resources.getIntArray(R.array.random_color)
-                val randomColor = color[Random().nextInt(color.size)]
-                binding.viewColorTag.setBackgroundColor(randomColor)
-                binding.txtShowTitle.text = todoModel.title
-                binding.txtShowTask.text = todoModel.description
-                binding.txtShowCategory.text = todoModel.category
+    class TodoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        fun bind(todoModel: TodoModel) {
+            with(itemView) {
+                val colors = resources.getIntArray(R.array.random_color)
+                val randomColor = colors[Random().nextInt(colors.size)]
+                viewColorTag.setBackgroundColor(randomColor)
+                txtShowTitle.text = todoModel.title
+                txtShowTask.text = todoModel.description
+                txtShowCategory.text = todoModel.category
                 updateTime(todoModel.time)
                 updateDate(todoModel.date)
+
             }
         }
-
         private fun updateTime(time: Long) {
-            val myFormat = "h:mm a"
-            val sdf = SimpleDateFormat(myFormat)
-            binding.txtShowTime.text = sdf.format(Date(time))
-        }
-        private fun updateDate(date: Long) {
-            val myFormat = "EEE, d MMM yyyy"
-            val sdf = SimpleDateFormat(myFormat)
-            binding.txtShowDate.text = sdf.format(Date(date))
+            //Mon, 5 Jan 2020
+            val myformat = "h:mm a"
+            val sdf = SimpleDateFormat(myformat)
+            itemView.txtShowTime.text = sdf.format(Date(time))
+
         }
 
+        private fun updateDate(time: Long) {
+            //Mon, 5 Jan 2020
+            val myformat = "EEE, d MMM yyyy"
+            val sdf = SimpleDateFormat(myformat)
+            itemView.txtShowDate.text = sdf.format(Date(time))
+
+        }
     }
+
 }

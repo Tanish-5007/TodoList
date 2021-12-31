@@ -8,8 +8,11 @@ import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.core.view.isVisible
-import androidx.room.Room
 import com.example.todolist.databinding.ActivityTaskBinding
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -20,9 +23,14 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var myCalender: Calendar
     private lateinit var dateSetListener: DatePickerDialog.OnDateSetListener
     private lateinit var timeSetListener: TimePickerDialog.OnTimeSetListener
+
+    private var finalDate = 0L
+    private var finalTime = 0L
+
     private val labels = arrayListOf("Personal", "Business", "Insurance", "Shopping", "Banking")
-    val db by lazy {
-        Room.databaseBuilder(this, AppDatabase::class.java, DB_NAME)
+
+    private val db by lazy {
+        AppDatabase.getDatabase(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,13 +44,31 @@ class TaskActivity : AppCompatActivity() {
         binding.timeEdt.setOnClickListener {
             setTimeListener()
         }
+        binding.btnSave.setOnClickListener {
+            saveTodo()
+        }
 
         setUpSpinner()
 
     }
 
+    @DelicateCoroutinesApi
+    private fun saveTodo() {
+        val category = binding.spinnerCategory.selectedItem.toString()
+        val title = binding.titleInpLay.editText.toString()
+        val description = binding.taskInpLay.editText?.text.toString()
+
+        GlobalScope.launch(Dispatchers.IO) {
+            db.todoDao().insertTask(TodoModel(title, description, category, finalDate, finalTime))
+            finish()
+        }
+
+
+
+    }
+
     private fun setUpSpinner() {
-        val adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, labels)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, labels)
         labels.sort()
 
         binding.spinnerCategory.adapter = adapter
@@ -67,6 +93,7 @@ class TaskActivity : AppCompatActivity() {
     private fun updateTime() {
         val myFormat = "h:mm a"
         val sdf = SimpleDateFormat(myFormat)
+        finalTime = myCalender.time.time
         binding.timeEdt.setText(sdf.format(myCalender.time))
     }
 
@@ -93,6 +120,7 @@ class TaskActivity : AppCompatActivity() {
         // Mon, 5 jan 2020
         val myFormat = "EEE, d MMM yyyy"
         val sdf = SimpleDateFormat(myFormat)
+        finalDate = myCalender.time.time
         binding.dateEdt.setText(sdf.format(myCalender.time))
 
         binding.timeInpLay.isVisible = true
